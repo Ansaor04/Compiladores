@@ -1,0 +1,6 @@
+﻿  Function.cpp
+  Procedure.cpp
+  Generating Code...
+  Agrupation.obj : /DEBUG:FASTLINK is not supported when managed code is present; restarting link with /DEBUG:FULL
+  Compiler.vcxproj -> C:\Users\Ansaor-Strix\Documents\Visual Studio 2015\Projects\Compiler\Debug\Compiler.exe
+  Compiler.vcxproj -> C:\Users\Ansaor-Strix\Documents\Visual Studio 2015\Projects\Compiler\Debug\Compiler.pdb (Partial PDB)
