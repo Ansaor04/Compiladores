@@ -104,6 +104,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>Main</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -124,6 +126,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>Main</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -139,6 +143,7 @@
     <ClCompile Include="Coment.cpp" />
     <ClCompile Include="Constant.cpp" />
     <ClCompile Include="Delimitator.cpp" />
+    <ClCompile Include="Error.cpp" />
     <ClCompile Include="FSM.cpp" />
     <ClCompile Include="Function.cpp" />
     <ClCompile Include="MainWindow.cpp" />
@@ -157,6 +162,7 @@
     <ClInclude Include="Coment.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="Delimitator.h" />
+    <ClInclude Include="Error.h" />
     <ClInclude Include="FSM.h" />
     <ClInclude Include="Function.h" />
     <ClInclude Include="MainWindow.h">

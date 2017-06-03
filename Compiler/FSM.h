@@ -12,6 +12,7 @@
 #include "OpAritmetic.h"
 #include "OpLogic.h"
 #include "OpRelational.h"
+#include "Error.h"
 #include "Token.h"
 #include <fstream>
 #include <vector>
@@ -33,7 +34,8 @@ private:
 	COpAritmetic Arit;
 	COpLogic Logic;
 	COpRelational Relat;
-	CState *m_States[13] = { &Read, &Var, &Proc, &Funct, &Coment, &Assign, &Const, &Delim, &Reser, &Agrup, &Arit, &Logic, &Relat};
+	CError Error;
+	CState *m_States[14] = { &Read, &Var, &Proc, &Funct, &Coment, &Assign, &Const, &Delim, &Reser, &Agrup, &Arit, &Logic, &Relat, &Error};
 	std::ofstream lexFile;
 	std::vector<int> m_Stack;
 public:

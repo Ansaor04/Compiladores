@@ -48,7 +48,7 @@ void CFSM::closeFile()
 
 CFSM::CFSM()
 {
-	for (int i = 0; i < 13; i++)
+	for (int i = 0; i < 14; i++)
 		m_States[i]->pStateMachine = this;
 	m_pActualState = m_States[0];
 }
