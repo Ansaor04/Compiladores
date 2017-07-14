@@ -4,8 +4,11 @@
 void CComent::update()
 {
 	pStateMachine->pChar += 2;
-	while (pStateMachine->pChar != "*" && pStateMachine->pChar + 1 != "/")
+	while (1)
 	{
+		if (*pStateMachine->pChar == '*')
+			if (*(pStateMachine->pChar + 1) == '/')
+				break;
 		pStateMachine->pChar++;
 	}
 	pStateMachine->pChar += 2;

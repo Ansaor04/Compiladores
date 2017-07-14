@@ -18,7 +18,7 @@ void COpRelational::onEnter()
 
 void COpRelational::onExit()
 {
-	pStateMachine->actualToken.setType(TokenID::E::opRelational);
+	pStateMachine->tmpToken.setType(TokenID::E::opRelational);
 	pStateMachine->pushString();
 }
 

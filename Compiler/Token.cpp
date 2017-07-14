@@ -2,6 +2,7 @@
 
 void CToken::setType( int iTokenType)
 {
+	m_iType = iTokenType;
 
 	switch (iTokenType)
 	{
@@ -42,6 +43,13 @@ void CToken::setType( int iTokenType)
 		m_type = "string";
 		break;
 	}
+}
+
+CToken::CToken(std::string data, std::string type, int iType)
+{
+	m_phrase = data;
+	m_type = type;
+	m_iType = iType;
 }
 
 CToken::CToken()

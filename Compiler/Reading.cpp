@@ -18,9 +18,23 @@ bool stringCompare(std::string str, char * pcSource)
 
 void CReading::update() //To do.. optimizar los ciclos "For"
 {
-	while (*pStateMachine->pChar == ' ')
+
+	while (*pStateMachine->pChar == ' ' || *pStateMachine->pChar == '\t')
 	{
 		pStateMachine->pChar++;
+	}
+
+	if (stringCompare("\r\n", pStateMachine->pChar))
+	{
+		pStateMachine->pChar += 2;
+		pStateMachine->iLine++;
+		return;
+	}
+
+	if (stringCompare("/*", pStateMachine->pChar))
+	{
+		iNextState = States::E::Comment;
+		return;
 	}
 
 	for (int iReserved = 0; iReserved < 11; iReserved++)
@@ -82,7 +96,8 @@ void CReading::update() //To do.. optimizar los ciclos "For"
 		return;
 	}
 
-	if (*pStateMachine->pChar == ']')
+	if (*pStateMachine->pChar == ']' || *pStateMachine->pChar == '(' || *pStateMachine->pChar == ')' 
+		|| *pStateMachine->pChar == '[' || *pStateMachine->pChar == '{' || *pStateMachine->pChar == '}')
 	{
 		iNextState = States::E::Agrupation;
 		return;

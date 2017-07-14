@@ -189,13 +189,30 @@ namespace Compiler {
 
 		std::string Str = context.marshal_as<std::string>(managedString);
 
-		FSM.openFile("file.lex");
+		//lexic
+		FSM.setMode(CompilerPhase::E::lexic);
 		FSM.pChar = &Str[0];
 		while (FSM.pChar != &Str[Str.size()])
 			FSM.update();
 
+		//syntactic
+		FSM.setMode(CompilerPhase::E::syntactic);
+		FSM.Syn.processTokens();
+		FSM.pushNodes();
+
+
 
 		FSM.closeFile();
+
+		if (FSM.bHasErrors)
+		{
+
+		}
+		else
+		{
+
+		}
+
 	}
 
 	};

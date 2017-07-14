@@ -8,10 +8,8 @@ void CAgrupation::update()
 	pStateMachine->pushChar();
 	pStateMachine->pChar++;
 	iNextState = States::Reading;
-	if (*pStateMachine->pChar != '[' || *pStateMachine->pChar != ']')
-	{
+	if (*pStateMachine->pChar == '[' || *pStateMachine->pChar == ']')
 		iToken = TokenID::E::opDimension;
-	}
 }
 
 void CAgrupation::onEnter()
@@ -23,7 +21,7 @@ void CAgrupation::onEnter()
 
 void CAgrupation::onExit()
 {
-	pStateMachine->actualToken.setType(iToken);
+	pStateMachine->tmpToken.setType(iToken);
 	pStateMachine->pushString();
 }
 

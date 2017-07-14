@@ -20,7 +20,7 @@ void CProcedure::onEnter()
 
 void CProcedure::onExit()
 {
-	pStateMachine->actualToken.setType(TokenID::E::keyword);
+	pStateMachine->tmpToken.setType(TokenID::E::keyword);
 	pStateMachine->pushString();
 }
 

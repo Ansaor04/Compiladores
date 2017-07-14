@@ -18,7 +18,7 @@ void COpAritmetic::onEnter()
 
 void COpAritmetic::onExit()
 {
-	pStateMachine->actualToken.setType(TokenID::E::opArithmetic);
+	pStateMachine->tmpToken.setType(TokenID::E::opArithmetic);
 	pStateMachine->pushString();
 }
 

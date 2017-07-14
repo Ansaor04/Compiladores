@@ -4,7 +4,7 @@
 
 void CError::update()
 {
-	while (*pStateMachine->pChar == ' ')
+	while (*pStateMachine->pChar != ' ')
 	{
 		pStateMachine->pChar++;
 	}
@@ -20,6 +20,7 @@ void CError::onEnter()
 
 void CError::onExit()
 {
+	pStateMachine->pushError();
 }
 
 CError::CError()

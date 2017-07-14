@@ -24,7 +24,7 @@ void CDelimitator::onEnter()
 
 void CDelimitator::onExit()
 {
-	pStateMachine->actualToken.setType(TokenID::E::delimitator);
+	pStateMachine->tmpToken.setType(TokenID::E::delimitator);
 	pStateMachine->pushString();
 }
 

@@ -34,7 +34,7 @@ void CVariable::update()
 
 	if (stringCompare("var ", pStateMachine->pChar))
 	{
-		pStateMachine->actualToken.setType(TokenID::E::keyword);
+		pStateMachine->tmpToken.setType(TokenID::E::keyword);
 		while (*pStateMachine->pChar != ' ')
 		{
 			pStateMachine->pushString();
@@ -88,7 +88,7 @@ void CVariable::onEnter()
 
 void CVariable::onExit()
 {
-	pStateMachine->actualToken.setType(TokenID::E::id);
+	pStateMachine->tmpToken.setType(TokenID::E::id);
 	pStateMachine->pushString();
 }
 

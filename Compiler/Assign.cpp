@@ -37,7 +37,7 @@ void CAssign::onEnter()
 
 void CAssign::onExit()
 {
-	pStateMachine->actualToken.setType(TokenID::E::assign);
+	pStateMachine->tmpToken.setType(TokenID::E::assign);
 	pStateMachine->pushString();
 }
 

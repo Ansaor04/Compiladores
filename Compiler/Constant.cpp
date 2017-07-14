@@ -5,7 +5,6 @@
 void CConstant::update()
 {
 	iToken = TokenID::E::Int;
-	pStateMachine->pChar++;
 	while (isDigit(*pStateMachine->pChar) || *pStateMachine->pChar == '.')
 	{
 		if (*pStateMachine->pChar == '.')
@@ -26,7 +25,7 @@ void CConstant::onEnter()
 
 void CConstant::onExit()
 {
-	pStateMachine->actualToken.setType(iToken);
+	pStateMachine->tmpToken.setType(iToken);
 	pStateMachine->pushString();
 }
 

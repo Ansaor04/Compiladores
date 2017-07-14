@@ -14,8 +14,19 @@
 #include "OpRelational.h"
 #include "Error.h"
 #include "Token.h"
+#include "Syntactic.h"
 #include <fstream>
 #include <vector>
+
+namespace CompilerPhase
+{
+	enum E
+	{
+		lexic = 0,
+		syntactic,
+		semantic,
+	};
+}
 
 class CFSM
 {
@@ -35,19 +46,38 @@ private:
 	COpLogic Logic;
 	COpRelational Relat;
 	CError Error;
+
+
+
 	CState *m_States[14] = { &Read, &Var, &Proc, &Funct, &Coment, &Assign, &Const, &Delim, &Reser, &Agrup, &Arit, &Logic, &Relat, &Error};
-	std::ofstream lexFile;
+	std::ofstream lexFile, symbolTable, syntactic, errorFile;
 	std::vector<int> m_Stack;
+	std::vector<CToken> m_Tokens;
+	std::string filename;
+
+
+
 public:
-	CToken actualToken;
+	int iLine, iNumPhase;
+	bool bHasErrors;
+	Syntactic Syn;
+	CToken tmpToken;
+
 	char *pChar;
 	void update();
 	void pushState(int iState);
 	void popState();
 	void pushString();
 	void pushChar();
-	void openFile(char * pfilename);
+	void pushError();
+	void openFile(int iType);
 	void closeFile();
+
+	void pushNodes();
+
+	void setMode(int iType);
+	std::vector<CToken> &getTokens() { return m_Tokens; }
+
 	CFSM();
 	~CFSM();
 };

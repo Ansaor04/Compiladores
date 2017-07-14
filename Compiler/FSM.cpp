@@ -24,30 +24,98 @@ void CFSM::popState()
 
 void CFSM::pushString()
 {
-	if (actualToken.getToken().empty())
+	if (tmpToken.getToken().empty())
 		return;
-	lexFile << actualToken.getToken() << " " << actualToken.getType() << "\n";
-	actualToken.clearToken();
+	lexFile << tmpToken.getToken() << " " << tmpToken.getType() << "\n";
+	m_Tokens.push_back(CToken(tmpToken.getToken(), tmpToken.getType(), tmpToken.getIDType()));
+	tmpToken.clearToken();
 }
 
 void CFSM::pushChar()
 {
 	char tmp = *pChar;
-	actualToken.getToken().push_back(tmp);
+	tmpToken.getToken().push_back(tmp);
 }
 
-void CFSM::openFile(char * pfilename)
+void CFSM::pushError()
 {
-	lexFile.open(pfilename);
+	switch (iNumPhase)
+	{
+	case CompilerPhase::E::lexic:
+		{
+			if (bHasErrors)
+				errorFile << "Error de lexico en linea " << iLine << " \n";
+			else
+			{
+				bHasErrors = true;
+				errorFile.open("log.err");
+				errorFile << "Error de lexico en linea " << iLine << " \n";
+			}
+		}
+		break;
+	case CompilerPhase::E::syntactic:
+		{
+			if (bHasErrors)
+				errorFile << "Error de Sintactico en el token " << Syn.getActualToken()->getToken() << " \n";
+			else
+			{
+				bHasErrors = true;
+				errorFile.open("log.err");
+				errorFile << "Error de Sintactico en el token " << Syn.getActualToken()->getToken() << " \n";
+			}
+		}
+		break;
+	}
+
+
+}
+
+void CFSM::openFile(int iType)
+{
+	switch (iType)
+	{
+	case CompilerPhase::E::lexic:
+		lexFile.open(filename + ".lex");
+		break;
+	case CompilerPhase::E::syntactic:
+		symbolTable.open(filename + ".symb");
+		break;
+	case CompilerPhase::E::semantic:
+		//		syntactic.open(filename + ".syn");
+		break;
+	}
+
 }
 
 void CFSM::closeFile()
 {
 	lexFile.close();
+	symbolTable.close();
+//	syntactic.close();
+
+	if (bHasErrors)
+		errorFile.close();
 }
+
+void CFSM::pushNodes()
+{
+	openFile(CompilerPhase::syntactic);
+	for (auto &it : Syn.m_nodes)
+		symbolTable << it.name << " " << it.type << " " << it.local <<" \n";
+}
+
+void CFSM::setMode(int iType)
+{
+	iNumPhase = iType;
+	openFile(iType);
+}
+
 
 CFSM::CFSM()
 {
+	iLine = 0;
+	iNumPhase = CompilerPhase::E::lexic;
+	bHasErrors = false;
 	for (int i = 0; i < 14; i++)
 		m_States[i]->pStateMachine = this;
 	m_pActualState = m_States[0];

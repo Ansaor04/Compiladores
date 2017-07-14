@@ -18,7 +18,7 @@ void COpLogic::onEnter()
 
 void COpLogic::onExit()
 {
-	pStateMachine->actualToken.setType(TokenID::E::opLogic);
+	pStateMachine->tmpToken.setType(TokenID::E::opLogic);
 	pStateMachine->pushString();
 }
 

@@ -21,7 +21,7 @@ void CReserved::onEnter()
 
 void CReserved::onExit()
 {
-	pStateMachine->actualToken.setType(TokenID::E::keyword);
+	pStateMachine->tmpToken.setType(TokenID::E::keyword);
 	pStateMachine->pushString();
 }
 

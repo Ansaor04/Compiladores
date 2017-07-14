@@ -153,6 +153,7 @@
     <ClCompile Include="Procedure.cpp" />
     <ClCompile Include="Reading.cpp" />
     <ClCompile Include="Reserved.cpp" />
+    <ClCompile Include="Syntactic.cpp" />
     <ClCompile Include="Token.cpp" />
     <ClCompile Include="Variable.cpp" />
   </ItemGroup>
@@ -168,6 +169,7 @@
     <ClInclude Include="MainWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Node.h" />
     <ClInclude Include="OpAritmetic.h" />
     <ClInclude Include="OpLogic.h" />
     <ClInclude Include="OpRelational.h" />
@@ -175,6 +177,7 @@
     <ClInclude Include="Reading.h" />
     <ClInclude Include="Reserved.h" />
     <ClInclude Include="State.h" />
+    <ClInclude Include="Syntactic.h" />
     <ClInclude Include="Token.h" />
     <ClInclude Include="Variable.h" />
   </ItemGroup>
