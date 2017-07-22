@@ -21,7 +21,7 @@ public:
 
 	void insertNode(std::string &pName, int iCat, int iType, int iDim, CNode *pLocal, CNode *pNext);
 	bool tokenIsValue();
-	bool getNextToken();
+	void getNextToken();
 
 
 	void processTokens();

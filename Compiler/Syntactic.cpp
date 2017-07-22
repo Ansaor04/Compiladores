@@ -3,7 +3,9 @@
 
 bool Syntactic::tokenIsValue()
 {
-	if (pActualtoken->getIDType() == TokenID::E::Float || pActualtoken->getIDType() == TokenID::E::Int || pActualtoken->getIDType() == TokenID::E::String)
+	//if (pActualtoken->getToken() == "float" || pActualtoken->getToken() == "int" || pActualtoken->getToken() == "string")
+	//	return true;
+	if (pActualtoken->getIDType() == TokenID::E::Float || pActualtoken->getIDType() == TokenID::Int || pActualtoken->getIDType() == TokenID::E::String)
 		return true;
 	return false;
 }
@@ -11,6 +13,7 @@ bool Syntactic::tokenIsValue()
 void Syntactic::insertNode(std::string &pName, int iCat, int iType, int iDim, CNode *pLocal, CNode *pNext)
 {
 	return;
+
 	CNode *pActualNode;
 
 	if (global)
@@ -41,13 +44,13 @@ void Syntactic::insertNode(std::string &pName, int iCat, int iType, int iDim, CN
 
 #define MAXTYPES 8
 
-bool Syntactic::getNextToken()
+void Syntactic::getNextToken()
 {
 	synIndex++;
 	if (synIndex > pStateMachine->getTokens().size())
-		return false;
-	pActualtoken = &pStateMachine->getTokens()[synIndex];
-	return true;
+		pActualtoken = nullptr;
+	else
+		pActualtoken = &pStateMachine->getTokens()[synIndex];
 }
 
 void Syntactic::processTokens()
@@ -58,16 +61,16 @@ void Syntactic::processTokens()
 
 void Syntactic::processProgram()
 {
-
-	while (pActualtoken->getToken() == "var")
-		processVars();
+		
 	do 
 	{
 		if (pActualtoken->getToken() == "procedure")
 			processProcedure();
 		else if (pActualtoken->getToken() == "function")
 			processFunction();
-	} while (pActualtoken->getToken() == "procedure" || pActualtoken->getToken() == "function");
+		else if(pActualtoken->getToken() == "var")
+			processVars();
+	} while (pActualtoken->getToken() == "procedure" || pActualtoken->getToken() == "function" || pActualtoken->getToken() == "var");
 
 	global = false;
 
@@ -78,13 +81,13 @@ void Syntactic::processProgram()
 
 void Syntactic::processMain()
 {
-	if (pActualtoken->getToken() == "main")
+	if (pActualtoken->getToken() != "main")
 		pStateMachine->pushError();
 	getNextToken();
-	if (pActualtoken->getToken() == "(")
+	if (pActualtoken->getToken() != "(")
 		pStateMachine->pushError();
 	getNextToken();
-	if (pActualtoken->getToken() == ")")
+	if (pActualtoken->getToken() != ")")
 		pStateMachine->pushError();
 	getNextToken();
 }
@@ -93,10 +96,14 @@ int Syntactic::processVarType()
 {
 	int iType;
 
-	if (!tokenIsValue())
+	if (pActualtoken->getToken() == "float")
+		iType = TokenID::Float;
+	else if (pActualtoken->getToken() == "int")
+		iType = TokenID::Int;
+	else if (pActualtoken->getToken() == "string")
+		iType = TokenID::String;
+	else
 		pStateMachine->pushError();
-
-	iType = pActualtoken->getIDType();
 
 	getNextToken();
 
@@ -166,6 +173,7 @@ void Syntactic::processProcedure()
 
 	getNextToken();
 	processBlock();
+	getNextToken();
 }
 
 void Syntactic::processFunction()
@@ -186,7 +194,7 @@ void Syntactic::processFunction()
 		pStateMachine->pushError();
 
 	getNextToken();
-	if (!tokenIsValue())
+	if (pActualtoken->getToken() != "float" || pActualtoken->getToken() != "int" || pActualtoken->getToken() != "string")
 		pStateMachine->pushError();
 
 	insertNode(name, nodesCat::E::procedure, pActualtoken->getIDType() - MAXTYPES, 0, nullptr, nullptr);
@@ -240,6 +248,7 @@ void Syntactic::processListExpres()
 
 void Syntactic::processExpresion() //
 {
+	getNextToken();
 	if (pActualtoken->getIDType() == TokenID::E::id || tokenIsValue())
 	{
 		getNextToken();
@@ -253,8 +262,13 @@ void Syntactic::processExpresion() //
 				if (pActualtoken->getToken() != ")")
 					pStateMachine->pushError();
 			}
-			else if (pActualtoken->getIDType() != TokenID::E::id || !tokenIsValue())
-				pStateMachine->pushError();
+			else
+			{
+				if (!tokenIsValue())
+					pStateMachine->pushError();
+				else if (pActualtoken->getIDType() != TokenID::E::id)
+					pStateMachine->pushError();
+			}
 		}
 		else if (pActualtoken->getToken() == "(")
 			processCall();
@@ -400,6 +414,8 @@ int Syntactic::processDimension()
 	pStateMachine->pushError();
 	getNextToken();
 	getNextToken();
+
+	return 0;
 }
 
 void Syntactic::processParam()
