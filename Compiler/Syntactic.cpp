@@ -1,41 +1,11 @@
 #include "Syntactic.h"
 #include "FSM.h"
 
-void Syntactic::processTokens()
+bool Syntactic::tokenIsValue()
 {
-	pActualtoken = &pStateMachine->getTokens()[0];
-	processProgram();
-}
-
-void Syntactic::processProgram()
-{
-
-	while (pActualtoken->getToken() == "var")
-		processVars();
-
-	global = false;
-
-	do 
-	{
-		if (pActualtoken->getToken() == "procedure")
-			processProcedure();
-		else if (pActualtoken->getToken() == "function")
-			processFunction();
-	} while (pActualtoken->getToken() == "procedure" || pActualtoken->getToken() == "function");
-
-	processMain();
-	processBlock();
-
-}
-
-void Syntactic::processMain()
-{
-	if (pActualtoken->getToken() == "main")
-		pStateMachine->pushError();
-	if (pActualtoken->getToken() == "(")
-		pStateMachine->pushError();
-	if (pActualtoken->getToken() == ")")
-		pStateMachine->pushError();
+	if (pActualtoken->getIDType() == TokenID::E::Float || pActualtoken->getIDType() == TokenID::E::Int || pActualtoken->getIDType() == TokenID::E::String)
+		return true;
+	return false;
 }
 
 void Syntactic::insertNode(std::string &pName, int iCat, int iType, int iDim, CNode *pLocal, CNode *pNext)
@@ -80,11 +50,50 @@ bool Syntactic::getNextToken()
 	return true;
 }
 
+void Syntactic::processTokens()
+{
+	pActualtoken = &pStateMachine->getTokens()[0];
+	processProgram();
+}
+
+void Syntactic::processProgram()
+{
+
+	while (pActualtoken->getToken() == "var")
+		processVars();
+	do 
+	{
+		if (pActualtoken->getToken() == "procedure")
+			processProcedure();
+		else if (pActualtoken->getToken() == "function")
+			processFunction();
+	} while (pActualtoken->getToken() == "procedure" || pActualtoken->getToken() == "function");
+
+	global = false;
+
+	processMain();
+	processBlock();
+
+}
+
+void Syntactic::processMain()
+{
+	if (pActualtoken->getToken() == "main")
+		pStateMachine->pushError();
+	getNextToken();
+	if (pActualtoken->getToken() == "(")
+		pStateMachine->pushError();
+	getNextToken();
+	if (pActualtoken->getToken() == ")")
+		pStateMachine->pushError();
+	getNextToken();
+}
+
 int Syntactic::processVarType()
 {
 	int iType;
 
-	if (pActualtoken->getIDType() != TokenID::E::Float || pActualtoken->getIDType() != TokenID::E::Int || pActualtoken->getIDType() != TokenID::E::String)
+	if (!tokenIsValue())
 		pStateMachine->pushError();
 
 	iType = pActualtoken->getIDType();
@@ -143,20 +152,6 @@ void Syntactic::processAssign()
 
 }
 
-void Syntactic::processProcCall()
-{
-	if (pActualtoken->getIDType() != TokenID::E::id)
-		pStateMachine->pushError();
-
-	if (pActualtoken->getToken() != "(")
-		pStateMachine->pushError();
-
-	processListExpres();
-
-	if (pActualtoken->getToken() != ")")
-		pStateMachine->pushError();
-
-}
 
 void Syntactic::processProcedure()
 {
@@ -191,7 +186,7 @@ void Syntactic::processFunction()
 		pStateMachine->pushError();
 
 	getNextToken();
-	if (pActualtoken->getIDType() != TokenID::E::Float || pActualtoken->getIDType() != TokenID::E::Int || pActualtoken->getIDType() != TokenID::E::String)
+	if (!tokenIsValue())
 		pStateMachine->pushError();
 
 	insertNode(name, nodesCat::E::procedure, pActualtoken->getIDType() - MAXTYPES, 0, nullptr, nullptr);
@@ -199,15 +194,34 @@ void Syntactic::processFunction()
 	processBlock();
 }
 
-void Syntactic::processFunctCall()
-{
-	if (pActualtoken->getIDType() != TokenID::E::id)
-		pStateMachine->pushError();
+//void Syntactic::processProcCall()
+//{
+//	if (pActualtoken->getIDType() != TokenID::E::id)
+//		pStateMachine->pushError();
+//
+//	getNextToken();
+//
+//	if (pActualtoken->getToken() != "(")
+//		pStateMachine->pushError();
+//
+//	processListExpres();
+//	getNextToken();
+//
+//	if (pActualtoken->getToken() != ")")
+//		pStateMachine->pushError();
+//
+//}
 
-	if (pActualtoken->getToken() != "(")
-		pStateMachine->pushError();
+void Syntactic::processCall()
+{
+	//if (pActualtoken->getIDType() != TokenID::E::id)
+	//	pStateMachine->pushError();
+	//getNextToken();
+	//if (pActualtoken->getToken() != "(")
+	//	pStateMachine->pushError();
 
 	processListExpres();
+	getNextToken();
 
 	if (pActualtoken->getToken() != ")")
 		pStateMachine->pushError();
@@ -216,45 +230,59 @@ void Syntactic::processFunctCall()
 
 void Syntactic::processListExpres()
 {
+	getNextToken();
 	do
 	{
 		processExpresion();
-	} while (pActualtoken->getToken() != ",");
+		getNextToken();
+	} while (pActualtoken->getToken() == ",");
 }
 
 void Syntactic::processExpresion() //
 {
-	processTerm();
-	getNextToken();
-
-	if (pActualtoken->getIDType() == TokenID::E::opArithmetic || pActualtoken->getIDType() == TokenID::E::opLogic || pActualtoken->getIDType() == TokenID::E::opRelational)
-		processOper();
-
-	if (pActualtoken->getIDType() == TokenID::E::id || pActualtoken->getToken() == "(")
-		processExpresion();
+	if (pActualtoken->getIDType() == TokenID::E::id || tokenIsValue())
+	{
+		getNextToken();
+		if (pActualtoken->getIDType() == TokenID::E::opArithmetic || pActualtoken->getIDType() == TokenID::E::opLogic || pActualtoken->getIDType() == TokenID::E::opRelational || pActualtoken->getIDType() == TokenID::E::assign)
+		{
+			processOper();
+			if (pActualtoken->getToken() == "(")
+			{
+				processExpresion();
+				getNextToken();
+				if (pActualtoken->getToken() != ")")
+					pStateMachine->pushError();
+			}
+			else if (pActualtoken->getIDType() != TokenID::E::id || !tokenIsValue())
+				pStateMachine->pushError();
+		}
+		else if (pActualtoken->getToken() == "(")
+			processCall();
+		return;
+	}
+	//processTerm();
 
 }
 
-void Syntactic::processTerm()
+void Syntactic::processTerm() //
 {
-	if (pActualtoken->getToken() == "(")
-	{
-		processExpresion();
-		getNextToken();
-		if (pActualtoken->getToken() != ")")
-			pStateMachine->pushError();
-
-		return;
-	}
-	else if (pActualtoken->getIDType() == TokenID::E::id)
-	{
-		getNextToken();
-		if (pActualtoken->getIDType() == TokenID::E::opDimension)
-			processDimension();
-		return;
-	}
-	else
-		processFunctCall();
+	//if (pActualtoken->getToken() == "(")
+	//{
+	//	processExpresion();
+	//	getNextToken();
+	//	if (pActualtoken->getToken() != ")")
+	//		pStateMachine->pushError();
+	//	return;
+	//}
+	//else if (pActualtoken->getIDType() == TokenID::E::id)
+	//{
+	//	getNextToken();
+	//	if (pActualtoken->getIDType() == TokenID::E::opDimension)
+	//		processDimension();
+	//	return;
+	//}
+	//else
+	//	processFunctCall();
 
 }
 
@@ -281,11 +309,7 @@ void Syntactic::processStatements()
 	{
 		processStatement();
 		getNextToken();
-		if (pActualtoken->getToken() != ";")
-			pStateMachine->pushError();
-
-		getNextToken();
-	} while (pActualtoken->getIDType() == TokenID::E::id);
+	} while (pActualtoken->getIDType() == TokenID::E::keyword);
 
 
 }
@@ -301,42 +325,62 @@ void Syntactic::processStatement()
 	}
 	else if (pActualtoken->getToken() == "if")
 	{
+		getNextToken();
 		if (pActualtoken->getToken() != "(")
 			pStateMachine->pushError();
 
 		processExpresion();
 		getNextToken();
+		if (pActualtoken->getToken() != ")")
+			pStateMachine->pushError();
+		getNextToken();
 		processBlock();
 
 		return;
 	}
-	else if (pActualtoken->getToken() == "for")
+	else if (pActualtoken->getToken() == "for") 
 	{
 
+		getNextToken();
+		processExpresion();
+		getNextToken();
+		if (pActualtoken->getToken() != ";")
+			pStateMachine->pushError();
+		getNextToken();
+		processExpresion();
+		getNextToken();
+		if (pActualtoken->getToken() != ";")
+			pStateMachine->pushError();
+		getNextToken();
+		processExpresion();
+
+		getNextToken();
+		if (pActualtoken->getToken() != ")")
+			pStateMachine->pushError();
+		getNextToken();
+		processBlock();
 		return;
 	}
 	else if (pActualtoken->getToken() == "while")
 	{
+		getNextToken();
 		if (pActualtoken->getToken() != "(")
 			pStateMachine->pushError();
 
 		processExpresion();
+		getNextToken();
+		if (pActualtoken->getToken() != ")")
+			pStateMachine->pushError();
 		getNextToken();
 		processBlock();
 		return;
 	}
 	else if (pActualtoken->getToken() == "switch")
 	{
-
 		return;
 	}
-	else if (pActualtoken->getIDType() == TokenID::E::assign)
-	{
 
-		return;
-	}
-	processFunctCall();
-
+	pStateMachine->pushError();
 }
 
 int Syntactic::processDimension()
@@ -400,18 +444,23 @@ void Syntactic::processBlock()
 
 	getNextToken();
 
-
 	while (pActualtoken->getToken() != "}")
 	{
-		if (pActualtoken->getIDType() == TokenID::E::id)
+		if (pActualtoken->getIDType() == TokenID::E::id || tokenIsValue())
+		{
 			processExpresion();
-		if (pActualtoken->getToken() == "var")
-			processVars();
-		if (pActualtoken->getIDType() == TokenID::E::keyword)
-			processStatements();
-	}
-		
+			getNextToken();
+			if (pActualtoken->getToken() != ";")
+				pStateMachine->pushError();
+		}
 
+		else if (pActualtoken->getToken() == "var")
+			processVars();
+		else if (pActualtoken->getIDType() == TokenID::E::keyword)
+			processStatements();
+
+		getNextToken();
+	}
 }
 
 Syntactic::Syntactic(CFSM * pFSM)

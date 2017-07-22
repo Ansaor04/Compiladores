@@ -1,6 +1,6 @@
 ﻿  Syntactic.cpp
-Syntactic.cpp(77): warning C4018: '>': signed/unsigned mismatch
-c:\users\ansaor-strix\documents\compiladores\compiler\syntactic.cpp(346): warning C4715: 'Syntactic::processDimension': not all control paths return a value
+Syntactic.cpp(47): warning C4018: '>': signed/unsigned mismatch
+c:\users\ansaor-strix\documents\compiladores\compiler\syntactic.cpp(403): warning C4715: 'Syntactic::processDimension': not all control paths return a value
   Agrupation.obj : /DEBUG:FASTLINK is not supported when managed code is present; restarting link with /DEBUG:FULL
   Compiler.vcxproj -> C:\Users\Ansaor-Strix\Documents\Compiladores\Debug\Compiler.exe
   Compiler.vcxproj -> C:\Users\Ansaor-Strix\Documents\Compiladores\Debug\Compiler.pdb (Partial PDB)

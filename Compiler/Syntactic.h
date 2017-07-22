@@ -20,8 +20,10 @@ public:
 	std::vector<CNode*> m_nodes;
 
 	void insertNode(std::string &pName, int iCat, int iType, int iDim, CNode *pLocal, CNode *pNext);
-
+	bool tokenIsValue();
 	bool getNextToken();
+
+
 	void processTokens();
 
 	void processProgram();
@@ -29,10 +31,10 @@ public:
 
 	void processVars();
 	void processAssign();
-	void processProcCall();
+	void processCall();
 	void processProcedure();
 	void processFunction();
-	void processFunctCall();
+	//void processFunctCall();
 
 	void processListExpres();
 	void processExpresion();
@@ -46,6 +48,8 @@ public:
 	void processGpoParams();
 	int processDimension();
 	void processBlock();
+
+
 
 	Syntactic(CFSM * pFSM);
 	Syntactic();
