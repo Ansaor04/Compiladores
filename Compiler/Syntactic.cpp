@@ -222,7 +222,7 @@ void Syntactic::processListExpres()
 	} while (pActualtoken->getToken() != ",");
 }
 
-void Syntactic::processExpresion()
+void Syntactic::processExpresion() //
 {
 	processTerm();
 	getNextToken();
@@ -294,11 +294,19 @@ void Syntactic::processStatement()
 {
 	if (pActualtoken->getToken() == "return")
 	{
-
+		getNextToken();
+		if (pActualtoken->getToken() != ";")
+			pStateMachine->pushError();
 		return;
 	}
 	else if (pActualtoken->getToken() == "if")
 	{
+		if (pActualtoken->getToken() != "(")
+			pStateMachine->pushError();
+
+		processExpresion();
+		getNextToken();
+		processBlock();
 
 		return;
 	}
@@ -309,7 +317,12 @@ void Syntactic::processStatement()
 	}
 	else if (pActualtoken->getToken() == "while")
 	{
+		if (pActualtoken->getToken() != "(")
+			pStateMachine->pushError();
 
+		processExpresion();
+		getNextToken();
+		processBlock();
 		return;
 	}
 	else if (pActualtoken->getToken() == "switch")
@@ -387,8 +400,18 @@ void Syntactic::processBlock()
 
 	getNextToken();
 
-	if (pActualtoken->getToken() != "}")
-		processExpresion();
+
+	while (pActualtoken->getToken() != "}")
+	{
+		if (pActualtoken->getIDType() == TokenID::E::id)
+			processExpresion();
+		if (pActualtoken->getToken() == "var")
+			processVars();
+		if (pActualtoken->getIDType() == TokenID::E::keyword)
+			processStatements();
+	}
+		
+
 }
 
 Syntactic::Syntactic(CFSM * pFSM)
