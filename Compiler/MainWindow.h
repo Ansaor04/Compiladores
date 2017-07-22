@@ -196,11 +196,9 @@ namespace Compiler {
 			FSM.update();
 
 		//syntactic
+
 		FSM.setMode(CompilerPhase::E::syntactic);
-		FSM.Syn.processTokens();
-		FSM.pushNodes();
-
-
+		FSM.Syn->processTokens();
 
 		FSM.closeFile();
 

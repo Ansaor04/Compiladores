@@ -3,6 +3,15 @@
 
 void CFunction::update()
 {
+	while (*pStateMachine->pChar != ' ')
+	{
+		pStateMachine->pushChar();
+		pStateMachine->pChar++;
+	}
+	pStateMachine->tmpToken.setType(TokenID::E::keyword);
+	pStateMachine->pushString();
+	pStateMachine->pChar++;
+
 	while (isLetter(*pStateMachine->pChar) || *pStateMachine->pChar != '(')
 	{
 		pStateMachine->pushChar();
@@ -20,7 +29,7 @@ void CFunction::onEnter()
 
 void CFunction::onExit()
 {
-	pStateMachine->tmpToken.setType(TokenID::E::keyword);
+	pStateMachine->tmpToken.setType(TokenID::E::id);
 	pStateMachine->pushString();
 }
 

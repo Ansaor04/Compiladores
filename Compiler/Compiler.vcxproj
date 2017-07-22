@@ -89,6 +89,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -112,6 +113,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -146,6 +148,8 @@
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="FSM.cpp" />
     <ClCompile Include="Function.cpp" />
+    <ClCompile Include="GlobalNode.cpp" />
+    <ClCompile Include="LocalNode.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="OpAritmetic.cpp" />
     <ClCompile Include="OpLogic.cpp" />
@@ -160,16 +164,18 @@
   <ItemGroup>
     <ClInclude Include="Agrupation.h" />
     <ClInclude Include="Assign.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="Coment.h" />
     <ClInclude Include="Constant.h" />
     <ClInclude Include="Delimitator.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="FSM.h" />
     <ClInclude Include="Function.h" />
+    <ClInclude Include="GlobalNode.h" />
+    <ClInclude Include="LocalNode.h" />
     <ClInclude Include="MainWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="Node.h" />
     <ClInclude Include="OpAritmetic.h" />
     <ClInclude Include="OpLogic.h" />
     <ClInclude Include="OpRelational.h" />

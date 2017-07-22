@@ -37,9 +37,10 @@ void CVariable::update()
 		pStateMachine->tmpToken.setType(TokenID::E::keyword);
 		while (*pStateMachine->pChar != ' ')
 		{
-			pStateMachine->pushString();
+			pStateMachine->pushChar();
 			pStateMachine->pChar++;
 		}
+		pStateMachine->pushString();
 		pStateMachine->pChar++;
 	}
 	

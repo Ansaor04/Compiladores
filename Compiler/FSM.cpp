@@ -48,7 +48,7 @@ void CFSM::pushError()
 			else
 			{
 				bHasErrors = true;
-				errorFile.open("log.err");
+				errorFile.open(filename + ".err");
 				errorFile << "Error de lexico en linea " << iLine << " \n";
 			}
 		}
@@ -56,12 +56,12 @@ void CFSM::pushError()
 	case CompilerPhase::E::syntactic:
 		{
 			if (bHasErrors)
-				errorFile << "Error de Sintactico en el token " << Syn.getActualToken()->getToken() << " \n";
+				errorFile << "Error de Sintactico en el token " << Syn->getActualToken()->getToken() << " \n";
 			else
 			{
 				bHasErrors = true;
-				errorFile.open("log.err");
-				errorFile << "Error de Sintactico en el token " << Syn.getActualToken()->getToken() << " \n";
+				errorFile.open(filename + ".err");
+				errorFile << "Error de Sintactico en el token " << Syn->getActualToken()->getToken() << " \n";
 			}
 		}
 		break;
@@ -97,12 +97,6 @@ void CFSM::closeFile()
 		errorFile.close();
 }
 
-void CFSM::pushNodes()
-{
-	openFile(CompilerPhase::syntactic);
-	for (auto &it : Syn.m_nodes)
-		symbolTable << it.name << " " << it.type << " " << it.local <<" \n";
-}
 
 void CFSM::setMode(int iType)
 {
@@ -114,6 +108,7 @@ void CFSM::setMode(int iType)
 CFSM::CFSM()
 {
 	iLine = 0;
+	Syn = new Syntactic(this);
 	iNumPhase = CompilerPhase::E::lexic;
 	bHasErrors = false;
 	for (int i = 0; i < 14; i++)
@@ -123,4 +118,5 @@ CFSM::CFSM()
 
 CFSM::~CFSM()
 {
+	delete Syn;
 }

@@ -1,7 +1,8 @@
 #pragma once
 #include "Token.h"
-#include "Node.h"
-#include <vector>
+#include "GlobalNode.h"
+#include "LocalNode.h"
+#include <unordered_map>
 
 class CFSM;
 
@@ -15,8 +16,10 @@ class Syntactic
 public:
 
 	CToken *getActualToken() { return pActualtoken; }
-	std::vector<CNode> m_nodes;
-	void insertNode();
+	//std::unordered_map<NodeHash,CNode, int> m_nodes;
+	std::vector<CNode*> m_nodes;
+
+	void insertNode(std::string &pName, int iCat, int iType, int iDim, CNode *pLocal, CNode *pNext);
 
 	bool getNextToken();
 	void processTokens();
@@ -38,10 +41,10 @@ public:
 	void processStatements();
 	void processStatement();
 
-	void processVarType();
+	int processVarType();
 	void processParam();
 	void processGpoParams();
-	void processDimension();
+	int processDimension();
 	void processBlock();
 
 	Syntactic(CFSM * pFSM);

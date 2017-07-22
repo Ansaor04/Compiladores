@@ -50,7 +50,7 @@ private:
 
 
 	CState *m_States[14] = { &Read, &Var, &Proc, &Funct, &Coment, &Assign, &Const, &Delim, &Reser, &Agrup, &Arit, &Logic, &Relat, &Error};
-	std::ofstream lexFile, symbolTable, syntactic, errorFile;
+
 	std::vector<int> m_Stack;
 	std::vector<CToken> m_Tokens;
 	std::string filename;
@@ -60,7 +60,8 @@ private:
 public:
 	int iLine, iNumPhase;
 	bool bHasErrors;
-	Syntactic Syn;
+	std::ofstream lexFile, symbolTable, syntactic, errorFile;
+	Syntactic *Syn;
 	CToken tmpToken;
 
 	char *pChar;
@@ -72,8 +73,6 @@ public:
 	void pushError();
 	void openFile(int iType);
 	void closeFile();
-
-	void pushNodes();
 
 	void setMode(int iType);
 	std::vector<CToken> &getTokens() { return m_Tokens; }

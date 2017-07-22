@@ -3,25 +3,25 @@
 
 void Syntactic::processTokens()
 {
+	pActualtoken = &pStateMachine->getTokens()[0];
 	processProgram();
 }
 
 void Syntactic::processProgram()
 {
-	do
-	{
+
+	while (pActualtoken->getToken() == "var")
 		processVars();
-	} while (pActualtoken->getToken() != "var");
 
 	global = false;
 
 	do 
 	{
 		if (pActualtoken->getToken() == "procedure")
-			processFunction();
+			processProcedure();
 		else if (pActualtoken->getToken() == "function")
-			processProcCall();
-	} while (pActualtoken->getToken() != "procedure" || pActualtoken->getToken() != "function");
+			processFunction();
+	} while (pActualtoken->getToken() == "procedure" || pActualtoken->getToken() == "function");
 
 	processMain();
 	processBlock();
@@ -38,21 +38,38 @@ void Syntactic::processMain()
 		pStateMachine->pushError();
 }
 
-void Syntactic::insertNode()
+void Syntactic::insertNode(std::string &pName, int iCat, int iType, int iDim, CNode *pLocal, CNode *pNext)
 {
-	int type;
+	return;
+	CNode *pActualNode;
 
-	if (pActualtoken->getToken() == "function")
-		type = NodeType::function;
-	//if (pActualtoken->getToken() == "")
-	//	type = NodeType::param;
-	if (pActualtoken->getToken() == "procedure")
-		type = NodeType::procedure;
-	if (pActualtoken->getIDType() == TokenID::E::id)
-		type = NodeType::var;
+	if (global)
+		pActualNode = new CGlobalNode;
+	else
+		pActualNode = new CLocalNode;
 
-	m_nodes.push_back(CNode{ pActualtoken->getToken(), type, global});
+	pActualNode->m_name = pName;
+	pActualNode->m_iCategory = iCat;
+	pActualNode->m_iType = iType;
+	pActualNode->m_iDimention = iDim;
+	if (global)
+	{
+		((CGlobalNode*)pActualNode)->pLocal = ((CLocalNode*)pLocal);
+		((CGlobalNode*)pActualNode)->pNext = ((CGlobalNode*)pNext);
+	}
+	else
+	{
+		((CLocalNode*)pActualNode)->pLocal = ((CLocalNode*)pLocal);
+		((CLocalNode*)pActualNode)->pNext = ((CLocalNode*)pNext);
+	}
+
+	m_nodes.push_back(pActualNode);
+	pStateMachine->symbolTable << pActualNode->createStrData() << '\n';
+
+	delete pActualNode;
 }
+
+#define MAXTYPES 8
 
 bool Syntactic::getNextToken()
 {
@@ -63,60 +80,64 @@ bool Syntactic::getNextToken()
 	return true;
 }
 
-void Syntactic::processVarType()
+int Syntactic::processVarType()
 {
-	if (pActualtoken->getIDType() != TokenID::E::Float || pActualtoken->getIDType() != TokenID::E::Int)
+	int iType;
+
+	if (pActualtoken->getIDType() != TokenID::E::Float || pActualtoken->getIDType() != TokenID::E::Int || pActualtoken->getIDType() != TokenID::E::String)
 		pStateMachine->pushError();
-	else
-		insertNode();
+
+	iType = pActualtoken->getIDType();
+
 	getNextToken();
+
+	return iType;
 }
+#define MAX_VAR_DEC 20
 
 void Syntactic::processVars()
 {
+	int iVarNum = 0, iType, iDim[MAX_VAR_DEC];
+	std::string names[MAX_VAR_DEC];
 	do
 	{
 		getNextToken();
 
 		if (pActualtoken->getIDType() != TokenID::E::id)
 			pStateMachine->pushError();
-		else
-			insertNode();
+
+		names[iVarNum] = pActualtoken->getToken();
+
 		getNextToken();
 		if (pActualtoken->getIDType() == TokenID::E::opDimension && pActualtoken->getToken() == "[")
-			processDimension();
-
+			iDim[iVarNum] = processDimension();
+		iVarNum++;
 
 	} while (pActualtoken->getToken() == ",");
 
 	if (pActualtoken->getToken() != ":")
 		pStateMachine->pushError();
-	else
-		insertNode();
 
 	getNextToken();
-	processVarType();
+	iType = processVarType() - MAXTYPES;
+
+	for (int i = 0; i < iVarNum; i++)
+		insertNode(names[i], global, iType, iDim[i], nullptr, nullptr);
 
 	if (pActualtoken->getToken() != ";")
 		pStateMachine->pushError();
-	else
-		insertNode();
 }
 
 void Syntactic::processAssign()
 {
 	if (pActualtoken->getIDType() != TokenID::E::id)
 		pStateMachine->pushError();
-	else
-		insertNode();
 
 	if (pActualtoken->getIDType() == TokenID::E::opDimension && pActualtoken->getToken() == "[")
 		processDimension();
 
 	if (pActualtoken->getIDType() == TokenID::E::assign)
 		pStateMachine->pushError();
-	else
-		insertNode();
 
 	processExpresion();
 
@@ -129,15 +150,12 @@ void Syntactic::processProcCall()
 
 	if (pActualtoken->getToken() != "(")
 		pStateMachine->pushError();
-	else
-		insertNode();
 
 	processListExpres();
 
 	if (pActualtoken->getToken() != ")")
 		pStateMachine->pushError();
-	else
-		insertNode();
+
 }
 
 void Syntactic::processProcedure()
@@ -145,8 +163,9 @@ void Syntactic::processProcedure()
 	getNextToken();
 	if (pActualtoken->getIDType() != TokenID::E::id)
 		pStateMachine->pushError();
-	else
-		insertNode();
+
+	insertNode(pActualtoken->getToken(), nodesCat::E::procedure, -1, 0, nullptr, nullptr);
+
 	getNextToken();
 	processParam();
 
@@ -156,24 +175,26 @@ void Syntactic::processProcedure()
 
 void Syntactic::processFunction()
 {
+	std::string name;
+
 	getNextToken();
 	if (pActualtoken->getIDType() != TokenID::E::id)
 		pStateMachine->pushError();
-	else
-		insertNode();
+
+	name = pActualtoken->getToken();
+
 	getNextToken();
 	processParam();
 
 	getNextToken();
 	if (pActualtoken->getToken() != ":")
 		pStateMachine->pushError();
-	else
-		insertNode();
+
 	getNextToken();
 	if (pActualtoken->getIDType() != TokenID::E::Float || pActualtoken->getIDType() != TokenID::E::Int || pActualtoken->getIDType() != TokenID::E::String)
 		pStateMachine->pushError();
-	else
-		insertNode();
+
+	insertNode(name, nodesCat::E::procedure, pActualtoken->getIDType() - MAXTYPES, 0, nullptr, nullptr);
 
 	processBlock();
 }
@@ -182,20 +203,15 @@ void Syntactic::processFunctCall()
 {
 	if (pActualtoken->getIDType() != TokenID::E::id)
 		pStateMachine->pushError();
-	else
-		insertNode();
 
 	if (pActualtoken->getToken() != "(")
 		pStateMachine->pushError();
-	else
-		insertNode();
 
 	processListExpres();
 
 	if (pActualtoken->getToken() != ")")
 		pStateMachine->pushError();
-	else
-		insertNode();
+
 }
 
 void Syntactic::processListExpres()
@@ -213,13 +229,10 @@ void Syntactic::processExpresion()
 
 	if (pActualtoken->getIDType() == TokenID::E::opArithmetic || pActualtoken->getIDType() == TokenID::E::opLogic || pActualtoken->getIDType() == TokenID::E::opRelational)
 		processOper();
-	else
-		insertNode();
 
 	if (pActualtoken->getIDType() == TokenID::E::id || pActualtoken->getToken() == "(")
 		processExpresion();
-	else
-		insertNode();
+
 }
 
 void Syntactic::processTerm()
@@ -230,8 +243,7 @@ void Syntactic::processTerm()
 		getNextToken();
 		if (pActualtoken->getToken() != ")")
 			pStateMachine->pushError();
-		else
-			insertNode();
+
 		return;
 	}
 	else if (pActualtoken->getIDType() == TokenID::E::id)
@@ -248,30 +260,17 @@ void Syntactic::processTerm()
 
 void Syntactic::processOper()
 {
-	if (pActualtoken->getIDType() == TokenID::E::opLogic)
+
+	switch (pActualtoken->getIDType())
 	{
-		insertNode();
+	case TokenID::E::opLogic:
+	case TokenID::E::opArithmetic:
+	case TokenID::E::opDimension:
+	case TokenID::E::opRelational:
 		getNextToken();
 		return;
 	}
-	if (pActualtoken->getIDType() == TokenID::E::opRelational)
-	{
-		insertNode();
-		getNextToken();
-		return;
-	}
-	if (pActualtoken->getIDType() == TokenID::E::opDimension)
-	{
-		insertNode();
-		getNextToken();
-		return;
-	}
-	if (pActualtoken->getIDType() == TokenID::E::opArithmetic)
-	{
-		insertNode();
-		getNextToken();
-		return;
-	}
+
 	pStateMachine->pushError();
 	getNextToken();
 }
@@ -284,8 +283,7 @@ void Syntactic::processStatements()
 		getNextToken();
 		if (pActualtoken->getToken() != ";")
 			pStateMachine->pushError();
-		else 
-			insertNode();
+
 		getNextToken();
 	} while (pActualtoken->getIDType() == TokenID::E::id);
 
@@ -296,50 +294,51 @@ void Syntactic::processStatement()
 {
 	if (pActualtoken->getToken() == "return")
 	{
-		insertNode();
+
 		return;
 	}
 	else if (pActualtoken->getToken() == "if")
 	{
-		insertNode();
+
 		return;
 	}
 	else if (pActualtoken->getToken() == "for")
 	{
-		insertNode();
+
 		return;
 	}
 	else if (pActualtoken->getToken() == "while")
 	{
-		insertNode();
+
 		return;
 	}
 	else if (pActualtoken->getToken() == "switch")
 	{
-		insertNode();
+
 		return;
 	}
 	else if (pActualtoken->getIDType() == TokenID::E::assign)
 	{
-		insertNode();
+
 		return;
 	}
 	processFunctCall();
 
 }
 
-void Syntactic::processDimension()
+int Syntactic::processDimension()
 {
+	int iDim;
 	getNextToken();
 	if (pActualtoken->getIDType() != TokenID::E::Int)
 	{
+		iDim = atoi(pActualtoken->getToken().c_str());
 		getNextToken();
 		if (pActualtoken->getToken() != "]")
 			pStateMachine->pushError();
-		else 
-			insertNode();
+
 		getNextToken();
-		return;
+		return iDim;
 	}
 	pStateMachine->pushError();
 	getNextToken();
@@ -350,15 +349,12 @@ void Syntactic::processParam()
 {
 	if (pActualtoken->getToken() != "(")
 		pStateMachine->pushError();
-	else
-		insertNode();
 
-	processGpoParams();
+	getNextToken();
 
 	if (pActualtoken->getToken() != ")")
-		pStateMachine->pushError();
-	else
-		insertNode();
+		processGpoParams();
+
 }
 
 void Syntactic::processGpoParams()
@@ -368,18 +364,15 @@ void Syntactic::processGpoParams()
 	{
 		if (pActualtoken->getIDType() != TokenID::E::id)
 			pStateMachine->pushError();
-		else 
-			insertNode();
+
 		getNextToken();
 		if (pActualtoken->getToken() == ":")
 			pStateMachine->pushError();
-		else
-			insertNode();
+
 		getNextToken();
 		if (pActualtoken->getIDType() != TokenID::E::Float || pActualtoken->getIDType() != TokenID::E::Int || pActualtoken->getIDType() != TokenID::E::String)
 			pStateMachine->pushError();
-		else
-			insertNode();
+
 		getNextToken();
 
 	} while (pActualtoken->getToken() == ";");
@@ -391,15 +384,11 @@ void Syntactic::processBlock()
 {
 	if (pActualtoken->getToken() != "{")
 		pStateMachine->pushError();
-	else
-		insertNode();
 
-	processExpresion();
+	getNextToken();
 
 	if (pActualtoken->getToken() != "}")
-		pStateMachine->pushError();
-	else
-		insertNode();
+		processExpresion();
 }
 
 Syntactic::Syntactic(CFSM * pFSM)

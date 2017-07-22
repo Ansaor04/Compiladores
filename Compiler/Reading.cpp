@@ -24,10 +24,11 @@ void CReading::update() //To do.. optimizar los ciclos "For"
 		pStateMachine->pChar++;
 	}
 
-	if (stringCompare("\r\n", pStateMachine->pChar))
+	if (stringCompare("\r\n", pStateMachine->pChar) || *pStateMachine->pChar == '\n')
 	{
 		pStateMachine->pChar += 2;
 		pStateMachine->iLine++;
+		iNextState = States::E::Reading;
 		return;
 	}
 
