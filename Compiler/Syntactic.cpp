@@ -3,8 +3,6 @@
 
 bool Syntactic::tokenIsValue()
 {
-	//if (pActualtoken->getToken() == "float" || pActualtoken->getToken() == "int" || pActualtoken->getToken() == "string")
-	//	return true;
 	if (pActualtoken->getIDType() == TokenID::E::Float || pActualtoken->getIDType() == TokenID::Int || pActualtoken->getIDType() == TokenID::E::String)
 		return true;
 	return false;
@@ -12,8 +10,6 @@ bool Syntactic::tokenIsValue()
 
 void Syntactic::insertNode(std::string &pName, int iCat, int iType, int iDim, CNode *pLocal, CNode *pNext)
 {
-	return;
-
 	CNode *pActualNode;
 
 	if (global)
@@ -474,8 +470,8 @@ void Syntactic::processBlock()
 			processVars();
 		else if (pActualtoken->getIDType() == TokenID::E::keyword)
 			processStatements();
-
-		getNextToken();
+		if(pActualtoken->getToken() != "}")
+			getNextToken();
 	}
 }
 
