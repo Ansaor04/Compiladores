@@ -42,6 +42,9 @@ void CToken::setType( int iTokenType)
 	case TokenID::E::String:
 		m_type = "string";
 		break;
+	case TokenID::E::Bool:
+		m_type = "bool";
+		break;
 	}
 }
 

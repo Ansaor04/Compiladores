@@ -1,5 +1,23 @@
-﻿  Syntactic.cpp
-Syntactic.cpp(46): warning C4018: '>': signed/unsigned mismatch
+﻿  Agrupation.cpp
+  Assign.cpp
+  Coment.cpp
+  Constant.cpp
+  Delimitator.cpp
+  Error.cpp
+  FSM.cpp
+  Function.cpp
+  MainWindow.cpp
+  OpAritmetic.cpp
+  OpLogic.cpp
+  OpRelational.cpp
+  Procedure.cpp
+  Reading.cpp
+Reading.cpp(8): warning C4018: '<': signed/unsigned mismatch
+  Reserved.cpp
+  Semantic.cpp
+  Syntactic.cpp
+  Variable.cpp
+  Generating Code...
   Agrupation.obj : /DEBUG:FASTLINK is not supported when managed code is present; restarting link with /DEBUG:FULL
   Compiler.vcxproj -> C:\Users\Ansaor-Strix\Documents\Compiladores\Debug\Compiler.exe
   Compiler.vcxproj -> C:\Users\Ansaor-Strix\Documents\Compiladores\Debug\Compiler.pdb (Partial PDB)

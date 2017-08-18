@@ -4,8 +4,19 @@
 
 void COpLogic::update()
 {
-	pStateMachine->pushChar();
-	pStateMachine->pChar++;
+	if (*pStateMachine->pChar == '!')
+	{
+		pStateMachine->pushChar();
+		pStateMachine->pChar++;
+	}
+	else
+	{
+		pStateMachine->pushChar();
+		pStateMachine->pChar++;
+		pStateMachine->pushChar();
+		pStateMachine->pChar++;
+	}
+
 	iNextState = States::Reading;
 }
 

@@ -157,6 +157,7 @@
     <ClCompile Include="Procedure.cpp" />
     <ClCompile Include="Reading.cpp" />
     <ClCompile Include="Reserved.cpp" />
+    <ClCompile Include="Semantic.cpp" />
     <ClCompile Include="Syntactic.cpp" />
     <ClCompile Include="Token.cpp" />
     <ClCompile Include="Variable.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="Procedure.h" />
     <ClInclude Include="Reading.h" />
     <ClInclude Include="Reserved.h" />
+    <ClInclude Include="Semantic.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="Syntactic.h" />
     <ClInclude Include="Token.h" />

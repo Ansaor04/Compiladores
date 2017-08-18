@@ -37,7 +37,7 @@ public:
 	CFSM * pStateMachine;
 	int iNextState;
 	const std::string keyWords[6] = { " ", "var ", "procedure ", "function ", "/*" , "=" };
-	const std::string reservedWords[11] = { "float", "int", "string", "bool", "main", "for", "while", "if", "else", "switch", "return" };
+	const std::string reservedWords[15] = { "float", "int", "string", "bool", "main", "for", "while", "if", "else", "switch", "return", "print", "read", "true", "false"};
 	const std::string operatorAritmetic[6] = { "+", "-", "*", "/", "%", "^"};
 	const std::string operatorLogic[3] = { "&&", "||", "!"};
 	const std::string operatorRelational[6] = { "==", "<=", ">=", "!=", "<", ">" };	

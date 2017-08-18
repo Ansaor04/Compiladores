@@ -6,6 +6,8 @@ void CError::update()
 {
 	while (*pStateMachine->pChar != ' ')
 	{
+		if (stringCompare("\r\n", pStateMachine->pChar))
+			break;
 		pStateMachine->pChar++;
 	}
 	iNextState = States::E::Reading;

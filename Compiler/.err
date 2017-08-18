@@ -1,0 +1,30 @@
+Variable does not exist :a
+Incompatible type on assign :a
+Variable does not exist :a
+Variable does not exist :g
+Incompatible type on assign :g
+Variable does not exist :g
+Incompatible type on assign :g
+Variable does not exist :g
+Incompatible type on assign :g
+Variable does not exist :g
+Incompatible type on assign :g
+Variable does not exist :g
+Incompatible type on assign :g
+Undeclared call : uno
+Undeclared call : dos
+Undeclared call : dos
+Undeclared call : tres
+Variable does not exist :g
+Incompatible type on assign :g
+Variable does not exist :g
+Incompatible type on assign :g
+Variable does not exist :g
+Incompatible type on assign :g
+Variable does not exist :g
+Incompatible type on assign :g
+Undeclared call : func4
+Statement must have a boolean expresion :if
+Variable does not exist :g
+Incompatible type on assign :g
+Only functions return values

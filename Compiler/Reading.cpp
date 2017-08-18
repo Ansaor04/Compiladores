@@ -15,6 +15,21 @@ bool stringCompare(std::string str, char * pcSource)
 	return true;
 }
 
+bool isCall(char * pcSource)
+{
+	char *pActualChar = pcSource;
+
+	while (*pActualChar != ' ')
+	{
+		if (!isAlphanumeric(*pActualChar))
+			return false;
+		pActualChar++;
+		if (*pActualChar == '(')
+			return true;
+	}
+	return false;
+}
+
 
 void CReading::update() //To do.. optimizar los ciclos "For"
 {
@@ -38,7 +53,7 @@ void CReading::update() //To do.. optimizar los ciclos "For"
 		return;
 	}
 
-	for (int iReserved = 0; iReserved < 11; iReserved++)
+	for (int iReserved = 0; iReserved < 15; iReserved++)
 	{
 		if (stringCompare(reservedWords[iReserved], pStateMachine->pChar))
 		{
@@ -49,7 +64,7 @@ void CReading::update() //To do.. optimizar los ciclos "For"
 
 	for (int iLogic = 0; iLogic < 3; iLogic++)
 	{
-		if (stringCompare(reservedWords[iLogic], pStateMachine->pChar))
+		if (stringCompare(operatorLogic[iLogic], pStateMachine->pChar))
 		{
 			iNextState = States::E::OpLogic;
 			return;
@@ -85,13 +100,27 @@ void CReading::update() //To do.. optimizar los ciclos "For"
 		return;
 	}
 
+	if (isCall(pStateMachine->pChar)) 
+	{
+		while (*pStateMachine->pChar != '(')
+		{
+			pStateMachine->pushChar();
+			pStateMachine->pChar++;
+		}
+		pStateMachine->tmpToken.setType(TokenID::E::id);
+		pStateMachine->pushString();
+
+		iNextState = States::E::Agrupation;
+		return;
+	}
+
 	if (isDigit(*pStateMachine->pChar))
 	{
 		iNextState = States::E::Constant;
 		return;
 	}
 
-	if (isLetter(*pStateMachine->pChar))
+	if (isLetter(*pStateMachine->pChar) || *pStateMachine->pChar == '"')
 	{
 		iNextState = States::E::Variable;
 		return;

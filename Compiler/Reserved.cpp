@@ -4,11 +4,46 @@
 
 void CReserved::update()
 {
-	while (isLetter(*pStateMachine->pChar))
+	/*if (stringCompare("print", pStateMachine->pChar) || stringCompare("read", pStateMachine->pChar))
 	{
+		while (isLetter(*pStateMachine->pChar))
+		{
+			pStateMachine->pushChar();
+			pStateMachine->pChar++;
+		}
+		pStateMachine->tmpToken.setType(TokenID::E::keyword);
+		pStateMachine->pushString();
+
 		pStateMachine->pushChar();
 		pStateMachine->pChar++;
+		pStateMachine->tmpToken.setType(TokenID::E::agrupation);
+		pStateMachine->pushString();
+
+		if (*pStateMachine->pChar == '"')
+		{
+			pStateMachine->pChar++;
+			while (*pStateMachine->pChar != '"')
+			{
+				pStateMachine->pushChar();
+				pStateMachine->pChar++;
+			}
+			pStateMachine->tmpToken.setType(TokenID::E::String);
+			pStateMachine->pushString();
+			pStateMachine->pChar++;
+		}
 	}
+	else*/
+	{
+		while (isLetter(*pStateMachine->pChar))
+		{
+			pStateMachine->pushChar();
+			pStateMachine->pChar++;
+		}
+
+		pStateMachine->tmpToken.setType(TokenID::E::keyword);
+		pStateMachine->pushString();
+	}
+
 	iNextState = States::Reading;
 }
 
@@ -21,8 +56,7 @@ void CReserved::onEnter()
 
 void CReserved::onExit()
 {
-	pStateMachine->tmpToken.setType(TokenID::E::keyword);
-	pStateMachine->pushString();
+
 }
 
 CReserved::CReserved()

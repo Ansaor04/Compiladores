@@ -8,37 +8,40 @@ class CFSM;
 
 class Syntactic
 {
-	CToken *pActualtoken;
-	CFSM *pStateMachine;
-	int synIndex;
 
-	bool global;
+	CFSM *pStateMachine;
+	std::list<CToken>::iterator pActualtoken;
+
 public:
 
-	CToken *getActualToken() { return pActualtoken; }
-	//std::unordered_map<NodeHash,CNode, int> m_nodes;
+	CToken *getActualToken() { return &(*pActualtoken); }
 	std::vector<CNode*> m_nodes;
+	std::string localVarName;
+	bool global;
+	int iRecoveredErrors;
 
 	void insertNode(std::string &pName, int iCat, int iType, int iDim, CNode *pLocal, CNode *pNext);
+	void insertToken(CToken tmpToken);
 	bool tokenIsValue();
+	bool tokenIsStatement();
+	bool tokenIsKeywordValue();
 	void getNextToken();
-
+	void errorPanic(std::string find);
+	CToken *peekNextToken(int iPeek);
 
 	void processTokens();
 
 	void processProgram();
-	void processMain();
+	bool processMain();
 
 	void processVars();
 	void processAssign();
 	void processCall();
 	void processProcedure();
 	void processFunction();
-	//void processFunctCall();
 
 	void processListExpres();
 	void processExpresion();
-	void processTerm();
 	void processOper();
 	void processStatements();
 	void processStatement();

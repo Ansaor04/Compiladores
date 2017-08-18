@@ -4,8 +4,14 @@
 void CComent::update()
 {
 	pStateMachine->pChar += 2;
-	while (1)
+	while (true)
 	{
+		if (stringCompare("\r\n", pStateMachine->pChar) || *pStateMachine->pChar == '\n')
+		{
+			pStateMachine->pChar += 2;
+			pStateMachine->iLine++;
+		}
+
 		if (*pStateMachine->pChar == '*')
 			if (*(pStateMachine->pChar + 1) == '/')
 				break;

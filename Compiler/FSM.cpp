@@ -1,6 +1,31 @@
 #include "FSM.h"
 
 
+std::string g_SynError[20] =
+{
+"Variable already defined : ",
+"Expected ",
+"No entry point defined",
+"Expected type 'int' on a switch statement",
+"Expresion must return a value",
+"Function must have a return type",
+"Array index must be an integer",
+"Variable does not exist :",
+"Only functions return values",
+"Incompatible type on assign :",
+"Function return type does not match",
+"Statement must have a boolean expresion :",
+"Statement must be an incrementable expresion : ",
+"Array index can not be less or equals to zero",
+"Expected an expresion",
+"",
+"Undeclared ",
+"",
+"",
+""
+};
+
+
 void CFSM::update()
 {
 	m_pActualState->onEnter();
@@ -43,31 +68,73 @@ void CFSM::pushError()
 	{
 	case CompilerPhase::E::lexic:
 		{
-			if (bHasErrors)
-				errorFile << "Error de lexico en linea " << iLine << " \n";
-			else
-			{
+			if (!bHasErrors)
+			{ 
 				bHasErrors = true;
 				errorFile.open(filename + ".err");
-				errorFile << "Error de lexico en linea " << iLine << " \n";
 			}
+			errorFile << "Lexic error on line  " << iLine << " \r\n";
 		}
 		break;
 	case CompilerPhase::E::syntactic:
 		{
-			if (bHasErrors)
-				errorFile << "Error de Sintactico en el token " << Syn->getActualToken()->getToken() << " \n";
-			else
+			if (!bHasErrors)
 			{
 				bHasErrors = true;
 				errorFile.open(filename + ".err");
-				errorFile << "Error de Sintactico en el token " << Syn->getActualToken()->getToken() << " \n";
 			}
+			errorFile << "Syntactic error on token " << Syn->getActualToken()->getToken() << " \r\n";
+		}
+		break;
+
+	case CompilerPhase::E::semantic:
+		{
+			if (!bHasErrors)
+			{
+				bHasErrors = true;
+				errorFile.open(filename + ".err");
+			}
+			errorFile << "Semantic error on token " << Sem->pActualtoken->getToken() << " \r\n";
+		}
+	break;
+	}
+}
+
+void CFSM::pushError(int iError, std::string info)
+{
+	switch (iNumPhase)
+	{
+		case CompilerPhase::E::lexic:
+			//aun no se implementa
+		break;
+		case CompilerPhase::E::syntactic:
+		{
+			if (!bHasErrors)
+			{
+				bHasErrors = true;
+				errorFile.open(filename + ".err");
+			}
+			if (!Syn->localVarName.empty() && iError != SynE::E::custom)
+				errorFile << g_SynError[iError] << info << " in " << Syn->localVarName << "\r\n";
+			else
+				errorFile << g_SynError[iError] << info <<  "\r\n";
+
+		}
+		break;
+		case CompilerPhase::E::semantic:
+		{
+			if (!bHasErrors)
+			{
+				bHasErrors = true;
+				errorFile.open(filename + ".err");
+			}
+			if (!Sem->functName.empty())
+				errorFile << g_SynError[iError] << info << " in " << Sem->functName << "\r\n";
+			else
+				errorFile << g_SynError[iError] << info << "\r\n";
 		}
 		break;
 	}
-
-
 }
 
 void CFSM::openFile(int iType)
@@ -97,11 +164,21 @@ void CFSM::closeFile()
 		errorFile.close();
 }
 
-
 void CFSM::setMode(int iType)
 {
 	iNumPhase = iType;
 	openFile(iType);
+}
+
+void CFSM::reset()
+{
+	iLine = 0;
+	bHasErrors = false;
+
+	Syn->m_nodes.clear();
+	Syn->iRecoveredErrors = 0;
+	m_Tokens.clear();
+	Syn->global = true;
 }
 
 
@@ -109,6 +186,7 @@ CFSM::CFSM()
 {
 	iLine = 0;
 	Syn = new Syntactic(this);
+	Sem = new Semantic(this);
 	iNumPhase = CompilerPhase::E::lexic;
 	bHasErrors = false;
 	for (int i = 0; i < 14; i++)
@@ -119,4 +197,5 @@ CFSM::CFSM()
 CFSM::~CFSM()
 {
 	delete Syn;
+	delete Sem;
 }

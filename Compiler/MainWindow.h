@@ -51,6 +51,7 @@ namespace Compiler {
 	private: System::Windows::Forms::TextBox^  textBox2;
 	private: System::Windows::Forms::ToolStripMenuItem^  compileToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  compileProgramToolStripMenuItem;
+	private: System::Windows::Forms::Label^  label1;
 
 
 	private:
@@ -75,6 +76,7 @@ namespace Compiler {
 			this->compileToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->compileProgramToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->textBox2 = (gcnew System::Windows::Forms::TextBox());
+			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -85,10 +87,11 @@ namespace Compiler {
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(968, 410);
 			this->textBox1->TabIndex = 0;
-			//			this->textBox1->TextChanged += gcnew System::EventHandler(this, &MainWindow::textBox1_TextChanged);
-						// 
-						// menuStrip1
-						// 
+			this->textBox1->ScrollBars = ScrollBars::Vertical;
+			this->textBox1->AcceptsTab = true;
+			// 
+			// menuStrip1
+			// 
 			this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
 			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
 				this->toolStripMenuItem1,
@@ -152,20 +155,31 @@ namespace Compiler {
 			this->textBox2->Multiline = true;
 			this->textBox2->Name = L"textBox2";
 			this->textBox2->ReadOnly = true;
-			this->textBox2->Size = System::Drawing::Size(966, 197);
+			this->textBox2->Size = System::Drawing::Size(966, 212);
 			this->textBox2->TabIndex = 2;
+			this->textBox2->ScrollBars = ScrollBars::Vertical;
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->Location = System::Drawing::Point(12, 687);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(49, 17);
+			this->label1->TabIndex = 3;
+			this->label1->Text = L"Ready";
 			// 
 			// MainWindow
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(992, 713);
+			this->Controls->Add(this->label1);
 			this->Controls->Add(this->textBox2);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->menuStrip1);
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"MainWindow";
-			this->Text = L"Compiler V0.1";
+			this->Text = L"Compiler V0.3";
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
 			this->ResumeLayout(false);
@@ -189,6 +203,10 @@ namespace Compiler {
 
 		std::string Str = context.marshal_as<std::string>(managedString);
 
+		static unsigned short sCompiledTimes = 0;
+
+		FSM.reset();
+
 		//lexic
 		FSM.setMode(CompilerPhase::E::lexic);
 		FSM.pChar = &Str[0];
@@ -196,22 +214,41 @@ namespace Compiler {
 			FSM.update();
 
 		//syntactic
-
 		FSM.setMode(CompilerPhase::E::syntactic);
 		FSM.Syn->processTokens();
 
+
+		//semantic
+		if (!FSM.bHasErrors)
+		{
+			FSM.setMode(CompilerPhase::E::semantic);
+			FSM.Sem->checkTokens();
+		}
+		else
+			FSM.pushError(SynE::E::custom, "Errors found, no semantic check could be done.");
+
 		FSM.closeFile();
+		
+		if (sCompiledTimes == 0)
+			this->label1->Text = "Compiled";
+		else
+			this->label1->Text = "Compiled (" + sCompiledTimes + ")";
 
 		if (FSM.bHasErrors)
 		{
+			std::ifstream iErr(FSM.filename + ".err");
+			std::string Errors((std::istreambuf_iterator<char>(iErr)), std::istreambuf_iterator<char>());
+			String^ managedError = gcnew String(Errors.c_str());
 
+			if(FSM.Syn->iRecoveredErrors != 0)
+				this->textBox2->Text = managedError + "Compiler recovered from " + FSM.Syn->iRecoveredErrors + " syntactic errors";
+			else
+				this->textBox2->Text = managedError;
 		}
 		else
-		{
+			this->textBox2->Text = "All Done, No compiler errors found";
 
-		}
-
+		sCompiledTimes++;
 	}
-
-	};
+};
 }

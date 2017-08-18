@@ -16,7 +16,8 @@ namespace TokenID
 		keyword,
 		Int,
 		Float,
-		String
+		String,
+		Bool
 	};
 }
 

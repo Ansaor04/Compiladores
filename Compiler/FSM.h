@@ -15,8 +15,10 @@
 #include "Error.h"
 #include "Token.h"
 #include "Syntactic.h"
+#include "Semantic.h"
 #include <fstream>
 #include <vector>
+#include <list>
 
 namespace CompilerPhase
 {
@@ -27,6 +29,32 @@ namespace CompilerPhase
 		semantic,
 	};
 }
+
+namespace SynE
+{
+	enum E
+	{
+		DefVar = 0,
+		Expect,
+		NoMain,
+		SwitchInt,
+		ReturnEmpty,
+		RetFunction,
+		DimensionArray,
+		VarNotDefined,
+		WrongReturn,
+		IncompAssign,
+		ReturnMismatch,
+		statementBool,
+		statementNonBool,
+		arrayNegative,
+		noExpresion,
+		custom,
+		undeclared,
+	};
+}
+
+#define MAXTYPES 8		//para construir la tabla de simbolos
 
 class CFSM
 {
@@ -52,16 +80,15 @@ private:
 	CState *m_States[14] = { &Read, &Var, &Proc, &Funct, &Coment, &Assign, &Const, &Delim, &Reser, &Agrup, &Arit, &Logic, &Relat, &Error};
 
 	std::vector<int> m_Stack;
-	std::vector<CToken> m_Tokens;
-	std::string filename;
-
-
+	std::list<CToken> m_Tokens;
 
 public:
 	int iLine, iNumPhase;
 	bool bHasErrors;
 	std::ofstream lexFile, symbolTable, syntactic, errorFile;
+	std::string filename;
 	Syntactic *Syn;
+	Semantic *Sem;
 	CToken tmpToken;
 
 	char *pChar;
@@ -71,11 +98,13 @@ public:
 	void pushString();
 	void pushChar();
 	void pushError();
+	void pushError(int iError, std::string info);
 	void openFile(int iType);
 	void closeFile();
 
 	void setMode(int iType);
-	std::vector<CToken> &getTokens() { return m_Tokens; }
+	void reset();
+	std::list<CToken> &getTokens() { return m_Tokens; }
 
 	CFSM();
 	~CFSM();

@@ -32,6 +32,25 @@ void CVariable::update()
 		pStateMachine->pChar++;
 	}
 
+	if (*pStateMachine->pChar == '"')
+	{
+		pStateMachine->pChar++;
+		while (*pStateMachine->pChar != '"')
+		{
+			if (stringCompare("\r\n", pStateMachine->pChar))
+			{
+				iNextState = States::E::Error;
+				return;
+			}
+			pStateMachine->pushChar();
+			pStateMachine->pChar++;
+		}
+		pStateMachine->tmpToken.setType(TokenID::E::String);
+		pStateMachine->pushString();
+		pStateMachine->pChar++;
+		return;
+	}
+
 	if (stringCompare("var ", pStateMachine->pChar))
 	{
 		pStateMachine->tmpToken.setType(TokenID::E::keyword);
@@ -55,19 +74,9 @@ void CVariable::update()
 				pStateMachine->pushChar();
 				pStateMachine->pChar++;
 			}
-			else if (*pStateMachine->pChar == '[')
-			{
-				iNextState = States::E::Agrupation;
-				return;
-			}
-			else if (*pStateMachine->pChar == ',')
-			{
-				iNextState = States::E::Delimitator;
-				return;
-			}
 			else
 			{
-				iNextState = States::E::Error;
+				iNextState = States::E::Reading;
 				return;
 			}
 		}
