@@ -1,30 +1,57 @@
 Variable does not exist :a
 Incompatible type on assign :a
-Variable does not exist :a
-Variable does not exist :g
-Incompatible type on assign :g
-Variable does not exist :g
-Incompatible type on assign :g
-Variable does not exist :g
-Incompatible type on assign :g
-Variable does not exist :g
-Incompatible type on assign :g
-Variable does not exist :g
-Incompatible type on assign :g
-Undeclared call : uno
-Undeclared call : dos
-Undeclared call : dos
-Undeclared call : tres
-Variable does not exist :g
-Incompatible type on assign :g
-Variable does not exist :g
-Incompatible type on assign :g
-Variable does not exist :g
-Incompatible type on assign :g
-Variable does not exist :g
-Incompatible type on assign :g
-Undeclared call : func4
+Variable does not exist :e
+Incompatible type on assign :e
+Expected type 'int' on a switch statement
+Variable does not exist :f
+Incompatible type on assign :f
+Variable does not exist :f
+Incompatible type on assign :f
 Statement must have a boolean expresion :if
-Variable does not exist :g
-Incompatible type on assign :g
-Only functions return values
+Variable does not exist :default
+Incompatible type on assign :default
+Variable does not exist :total in func1
+Incompatible type on assign :total in func1
+Variable does not exist :x in func2
+Incompatible type on assign :x in func2
+Variable does not exist :y in func2
+Incompatible type on assign :y in func2
+Variable does not exist :z in func2
+Incompatible type on assign :z in func2
+Variable does not exist :x in func2
+Incompatible type on assign :x in func2
+Variable does not exist :y in func2
+Incompatible type on assign :y in func2
+Statement must have a boolean expresion :if in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Function return type does not match in func3
+Variable does not exist :a in func3
+Incompatible type on assign :a in func3
+Variable does not exist :a in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Undeclared call : uno in func3
+Undeclared call : dos in func3
+Undeclared call : dos in func3
+Undeclared call : tres in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3
+Undeclared call : func4 in func3
+Statement must have a boolean expresion :if in func3
+Variable does not exist :g in func3
+Incompatible type on assign :g in func3

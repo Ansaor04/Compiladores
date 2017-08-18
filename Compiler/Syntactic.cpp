@@ -525,7 +525,8 @@ void Syntactic::processStatement()
 
 		processExpresion();
 
-		//getNextToken();
+		if(peekNextToken(1)->getToken() == ")")
+			getNextToken();
 
 		if (pActualtoken->getToken() != ")")
 			insertToken(CToken(")", "agrupation", TokenID::E::agrupation));
@@ -586,8 +587,8 @@ void Syntactic::processStatement()
 			insertToken(CToken("(", "agrupation", TokenID::E::agrupation));
 
 		getNextToken();
-		if (pActualtoken->getIDType() != TokenID::E::Int)
-			pStateMachine->pushError(SynE::E::SwitchInt, "");
+		//if (pActualtoken->getIDType() != TokenID::E::Int)
+		//	pStateMachine->pushError(SynE::E::SwitchInt, "");
 
 		getNextToken();
 		if (pActualtoken->getToken() != ")")

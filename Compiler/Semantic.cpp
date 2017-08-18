@@ -162,15 +162,20 @@ int Semantic::checkCall()
 		if (it->m_name == pActualtoken->getToken())
 		{
 			if (it->m_iCategory == nodesCat::E::function)
+			{
+				skipTo(";", true);
 				return it->m_iType + MAXTYPES;
+			}
 			else
+			{
+				pStateMachine->pushError(SynE::E::undeclared, "call : " + pActualtoken->getToken());
+				skipTo(";", true);
 				return -1;
+			}
 		}
 	}
-
 	pStateMachine->pushError(SynE::E::undeclared, "call : " + pActualtoken->getToken());
 	skipTo(";", true);
-
 	return -1;
 }
 
@@ -244,14 +249,29 @@ void Semantic::checkStatements()
 	}
 	else if (pActualtoken->getToken() == "switch")
 	{
-		//en el sintactico se checa por el entero del switch
+		getNextToken();
+		getNextToken();
+		if (pActualtoken->getIDType() != TokenID::E::Int)
+			pStateMachine->pushError(SynE::E::SwitchInt, "");
+
 		skipTo("{", true);
-		while (pActualtoken->getIDType() != TokenID::E::id)
+		while (pActualtoken->getToken() != "}")
 		{
-			getNextToken();
-			getNextToken();
-			checkBlock();
+			while (pActualtoken->getIDType() == TokenID::E::Int || pActualtoken->getToken() == "default")
+			{
+				getNextToken();
+				getNextToken();
+				checkBlock();
+			}
+
+			if (pActualtoken->getIDType() == TokenID::E::Float)
+			{
+				pStateMachine->pushError(SynE::E::SwitchInt, " on token " + pActualtoken->getToken());
+				skipTo("}", true);
+				getNextToken();
+			}
 		}
+
 	}
 	else if (pActualtoken->getToken() == "print")
 	{

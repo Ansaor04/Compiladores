@@ -9,13 +9,13 @@ class CFSM;
 
 class Semantic
 {
+public:
 	CFSM *pStateMachine;
-	bool ba();
 	std::vector<CNode*> *pNodes;
 	std::vector<std::map< bool, CToken>> vecTrees;
 	bool bHasReturn;
 	int iReturnType;
-public:
+
 	std::string functName;
 	std::list<CToken>::iterator pActualtoken;
 

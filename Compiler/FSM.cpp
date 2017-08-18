@@ -179,6 +179,11 @@ void CFSM::reset()
 	Syn->iRecoveredErrors = 0;
 	m_Tokens.clear();
 	Syn->global = true;
+
+	Sem->bHasReturn = false;
+	Sem->iReturnType = -1;
+	Sem->functName = "";
+	Sem->vecTrees.clear();
 }
 
 
